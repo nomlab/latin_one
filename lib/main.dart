@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Page(),
       routes: <String, WidgetBuilder> {
-        '/home': (BuildContext context) => Page(),
+        // '/home': (BuildContext context) => Page(),
         '/inbox': (BuildContext context) => InboxPage(),
       },
     );
@@ -46,7 +46,7 @@ class Pages extends State<Page> {
                 color: Colors.white,
               ),
             ),
-            backgroundColor: Colors.green,
+            backgroundColor: Colors.brown,
             leading: InkWell(
               onTap: () {
                 Navigator.of(context).pushNamed('/inbox');
@@ -67,17 +67,18 @@ class Pages extends State<Page> {
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: _onItemTapped,
+            type: BottomNavigationBarType.fixed,
             items: const <BottomNavigationBarItem> [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.search),
+                icon: Icon(Icons.map),
                 label: 'shops',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person),
+                icon: Icon(Icons.shopping_cart),
                 label: 'order',
               ),
             ],
@@ -91,18 +92,24 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Center(
-          child: Text(
-              'Home',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-              )
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   title: Center(
+      //     child: Text(
+      //         'Home',
+      //         style: TextStyle(
+      //           fontWeight: FontWeight.bold,
+      //           fontSize: 24,
+      //         )
+      //     ),
+      //   ),
+      // ),
       body: Container(
+        // decoration: BoxDecoration(
+        //     image: const DecorationImage(
+        //       image: AssetImage('assets/images/coffee.jpg'),
+        //       fit: BoxFit.cover,
+        //     )
+        // ),
         padding: EdgeInsets.all(32.0),
         child: Center(
           child: ListView(
@@ -116,7 +123,12 @@ class HomePage extends StatelessWidget {
                 },
                 child: Container(
                     margin: EdgeInsets.all(10), width: 350, height:200 ,
-                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Colors.blue),
+                    decoration: BoxDecoration(
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/coffee.jpg'),
+                          fit: BoxFit.cover,
+                        )
+                    ),
                     child: Text(
                         'order',
                         style: TextStyle(
@@ -130,7 +142,12 @@ class HomePage extends StatelessWidget {
               ),
               Container(
                   margin: EdgeInsets.all(10), width: 350, height:200 ,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Colors.red),
+                  decoration: BoxDecoration(
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/IMG_8836.jpg'),
+                        fit: BoxFit.cover,
+                      )
+                  ),
                   child: Text(
                       'Topic1',
                       style: TextStyle(
@@ -143,7 +160,12 @@ class HomePage extends StatelessWidget {
               ),
               Container(
                   margin: EdgeInsets.all(10), width: 350, height:200 ,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color: Colors.green),
+                  decoration: BoxDecoration(
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/IMG_8837.jpg'),
+                        fit: BoxFit.cover,
+                      )
+                  ),
                   child: Text(
                       'Topic2',
                       style: TextStyle(
