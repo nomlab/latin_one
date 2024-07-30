@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Page(),
+      title: 'LatinOne',
+      home: const Page(title: 'LatinOne'),
       routes: <String, WidgetBuilder> {
-        // '/home': (BuildContext context) => Page(),
-        '/inbox': (BuildContext context) => InboxPage(),
+        '/inbox': (BuildContext context) => new InboxPage(),
+        '/topic1': (BuildContext context) => new Topic1Page(),
+        '/topic2': (BuildContext context) => new Topic2Page(),
       },
     );
   }
 }
 
 class Page extends StatefulWidget {
+  const Page({super.key, required this.title});
+  final String title;
   @override
   Pages createState() => Pages();
 }
@@ -92,24 +100,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Center(
-      //     child: Text(
-      //         'Home',
-      //         style: TextStyle(
-      //           fontWeight: FontWeight.bold,
-      //           fontSize: 24,
-      //         )
-      //     ),
-      //   ),
-      // ),
       body: Container(
-        // decoration: BoxDecoration(
-        //     image: const DecorationImage(
-        //       image: AssetImage('assets/images/coffee.jpg'),
-        //       fit: BoxFit.cover,
-        //     )
-        // ),
         padding: EdgeInsets.all(32.0),
         child: Center(
           child: ListView(
@@ -117,9 +108,7 @@ class HomePage extends StatelessWidget {
               GestureDetector(
                 onTap: (){
                   var mainPageState = context.findAncestorStateOfType<Pages>();
-                  if (mainPageState != null) {
-                    mainPageState._onItemTapped(2);
-                  }
+                  mainPageState?._onItemTapped(2);
                 },
                 child: Container(
                     margin: EdgeInsets.all(10), width: 350, height:200 ,
@@ -140,41 +129,53 @@ class HomePage extends StatelessWidget {
                     alignment: Alignment.center
                 ),
               ),
-              Container(
-                  margin: EdgeInsets.all(10), width: 350, height:200 ,
-                  decoration: BoxDecoration(
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/IMG_8836.jpg'),
-                        fit: BoxFit.cover,
-                      )
-                  ),
-                  child: Text(
-                      'Topic1',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Colors.white
-                      )
-                  ),
-                  alignment: Alignment.center
+              GestureDetector(
+                onTap: (){
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Topic1Page()));
+                },
+                child: Container(
+                    margin: EdgeInsets.all(10), width: 350, height:200 ,
+                    decoration: BoxDecoration(
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/IMG_8836.jpg'),
+                          fit: BoxFit.cover,
+                        )
+                    ),
+                    child: Text(
+                        'Topic1',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Colors.white
+                        )
+                    ),
+                    alignment: Alignment.center
+                ),
               ),
-              Container(
-                  margin: EdgeInsets.all(10), width: 350, height:200 ,
-                  decoration: BoxDecoration(
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/IMG_8837.jpg'),
-                        fit: BoxFit.cover,
-                      )
-                  ),
-                  child: Text(
-                      'Topic2',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Colors.white
-                      )
-                  ),
-                  alignment: Alignment.center
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (context) => Topic2Page()));
+                },
+                child: Container(
+                    margin: EdgeInsets.all(10), width: 350, height:200 ,
+                    decoration: BoxDecoration(
+                        image: const DecorationImage(
+                          image: AssetImage('assets/images/IMG_8837.jpg'),
+                          fit: BoxFit.cover,
+                        )
+                    ),
+                    child: Text(
+                        'Topic2',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                            color: Colors.white
+                        )
+                    ),
+                    alignment: Alignment.center
+                ),
               ),
             ],
           ),
@@ -211,7 +212,52 @@ class ShopsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Shops'),
+        title: Text('〒781-5101 高知県高知市布師田３０６１',style: TextStyle(fontSize: 16.0),),
+      ),
+      body: FlutterMap(
+        options: const MapOptions(
+          // Latin coffeeの緯度経度です。
+          initialCenter: LatLng(33.57453, 133.57860),
+          initialZoom: 16,
+          minZoom: 10,
+          maxZoom: 20,
+        ),
+        children: [
+          TileLayer(
+            urlTemplate: 'https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg',
+          ),
+          const MarkerLayer(
+            markers: [
+              Marker(
+                width: 30.0,
+                height: 30.0,
+                // ピンの位置を設定
+                point: LatLng(33.57453, 133.57860),
+                child: Icon(
+                  Icons.location_on,
+                  color: Colors.red,
+                  // ここでピンのサイズを調整
+                  size: 50,
+                ),
+                // マップを回転させた時にピンも回転するのが rotate: false,
+                // マップを回転させた時にピンは常に同じ向きなのが rotate: true,
+                rotate: true,
+              ),
+            ],
+          ),
+        ],
+
+      ),
+    );
+  }
+}
+
+class OrderPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Order'),
       ),
       body: Container(
         padding: EdgeInsets.all(32.0),
@@ -228,12 +274,34 @@ class ShopsPage extends StatelessWidget {
   }
 }
 
-class OrderPage extends StatelessWidget {
+class Topic1Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Order'),
+        title: Text('Topic1'),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('To be continued...'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Topic2Page extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Topic2'),
       ),
       body: Container(
         padding: EdgeInsets.all(32.0),
