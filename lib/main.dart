@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_map_animations/flutter_map_animations.dart';
 
 void main() {
   runApp(MyApp());
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
         '/inbox': (BuildContext context) => new InboxPage(),
         '/topic1': (BuildContext context) => new Topic1Page(),
         '/topic2': (BuildContext context) => new Topic2Page(),
+        '/shopinfo': (BuildContext context) => new ShopInfoPage(),
       },
     );
   }
@@ -207,20 +209,65 @@ class InboxPage extends StatelessWidget {
   }
 }
 
-class ShopsPage extends StatelessWidget {
+
+class ShopsPage extends StatefulWidget {
+  @override
+  State<ShopsPage> createState() => _ShopsPageState();
+}
+
+class _ShopsPageState extends State<ShopsPage> with TickerProviderStateMixin {
+  late final _animatedMapController = AnimatedMapController(vsync: this);
+
+  void _showAlert(LatLng latlng) {
+    showDialog(
+      context: context,
+      builder: (context) =>
+          AlertDialog(
+            title: const Text('ピンの位置 : latin_coffee'),
+            content: Text(
+                '〒781-5101\n 高知県高知市布師田3061\n'
+                '緯度: ${33.57453}, 経度: ${133.57860}',
+              style: TextStyle(fontSize: 20.0),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text('詳細'),
+                onPressed: () {
+                  Navigator.of(context).pop(); // ダイアログを閉じる
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ShopInfoPage()),
+                  );
+                },
+              ),
+              TextButton(
+                child: const Text('閉じる'),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ],
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('〒781-5101 高知県高知市布師田３０６１',style: TextStyle(fontSize: 16.0),),
+        title: Text('〒781-5101 高知県高知市布師田3061',
+          style: TextStyle(fontSize: 16.0),),
       ),
       body: FlutterMap(
-        options: const MapOptions(
+        // mapControllerをFlutterMapに指定
+        mapController: _animatedMapController.mapController,
+        options: MapOptions(
           // Latin coffeeの緯度経度です。
           initialCenter: LatLng(33.57453, 133.57860),
-          initialZoom: 16,
+          initialZoom: 15,
           minZoom: 10,
           maxZoom: 20,
+          onTap: (tapPosition, point) {
+            _showAlert(point); // タップした位置でアラートを表示
+          },
         ),
         children: [
           TileLayer(
@@ -246,11 +293,13 @@ class ShopsPage extends StatelessWidget {
             ],
           ),
         ],
-
       ),
     );
   }
 }
+
+
+
 
 class OrderPage extends StatelessWidget {
   @override
@@ -302,6 +351,28 @@ class Topic2Page extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Topic2'),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(32.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text('To be continued...'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ShopInfoPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('ShopInfo'),
       ),
       body: Container(
         padding: EdgeInsets.all(32.0),
