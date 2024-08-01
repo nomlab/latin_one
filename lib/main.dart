@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: '.env');
   runApp(MyApp());
 }
 
@@ -17,7 +21,7 @@ class MyApp extends StatelessWidget {
       home: const Page(title: 'LatinOne'),
       routes: <String, WidgetBuilder> {
         '/inbox': (BuildContext context) => new InboxPage(),
-        '/topic1': (BuildContext context) => new Topic1Page(),
+        '/product': (BuildContext context) => new ProductPage(),
         '/topic2': (BuildContext context) => new Topic2Page(),
         '/shopinfo': (BuildContext context) => new ShopInfoPage(),
       },
@@ -134,7 +138,7 @@ class HomePage extends StatelessWidget {
               GestureDetector(
                 onTap: (){
                   Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Topic1Page()));
+                      context, MaterialPageRoute(builder: (context) => ProductPage()));
                 },
                 child: Container(
                     margin: EdgeInsets.all(10), width: 350, height:200 ,
@@ -145,7 +149,7 @@ class HomePage extends StatelessWidget {
                         )
                     ),
                     child: Text(
-                        'Topic1',
+                        'Product',
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 24,
@@ -218,15 +222,14 @@ class ShopsPage extends StatefulWidget {
 class _ShopsPageState extends State<ShopsPage> with TickerProviderStateMixin {
   late final _animatedMapController = AnimatedMapController(vsync: this);
 
-  void _showAlert(LatLng latlng) {
+  void _showAlert() {
     showDialog(
       context: context,
       builder: (context) =>
           AlertDialog(
-            title: const Text('ピンの位置 : latin_coffee'),
+            title: const Text('JAVANICA latin coffee'),
             content: Text(
-                '〒781-5101\n 高知県高知市布師田3061\n'
-                '緯度: ${33.57453}, 経度: ${133.57860}',
+                '〒781-5101\n 高知県高知市布師田3061\n',
               style: TextStyle(fontSize: 20.0),
             ),
             actions: <Widget>[
@@ -265,26 +268,29 @@ class _ShopsPageState extends State<ShopsPage> with TickerProviderStateMixin {
           initialZoom: 15,
           minZoom: 10,
           maxZoom: 20,
-          onTap: (tapPosition, point) {
-            _showAlert(point); // タップした位置でアラートを表示
-          },
         ),
         children: [
           TileLayer(
             urlTemplate: 'https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg',
           ),
-          const MarkerLayer(
+          MarkerLayer(
             markers: [
               Marker(
                 width: 30.0,
                 height: 30.0,
                 // ピンの位置を設定
                 point: LatLng(33.57453, 133.57860),
-                child: Icon(
-                  Icons.location_on,
-                  color: Colors.red,
-                  // ここでピンのサイズを調整
-                  size: 50,
+                child: GestureDetector(
+                  onTapDown: (tapPosition) {
+                    _showAlert(); // タップした位置でアラートを表示
+                  },
+                  child: Container(
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                      size: 30,
+                    ),
+                  ),
                 ),
                 // マップを回転させた時にピンも回転するのが rotate: false,
                 // マップを回転させた時にピンは常に同じ向きなのが rotate: true,
@@ -297,9 +303,6 @@ class _ShopsPageState extends State<ShopsPage> with TickerProviderStateMixin {
     );
   }
 }
-
-
-
 
 class OrderPage extends StatelessWidget {
   @override
@@ -323,12 +326,12 @@ class OrderPage extends StatelessWidget {
   }
 }
 
-class Topic1Page extends StatelessWidget {
+class ProductPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Topic1'),
+        title: Text('Product'),
       ),
       body: Container(
         padding: EdgeInsets.all(32.0),
@@ -367,20 +370,92 @@ class Topic2Page extends StatelessWidget {
   }
 }
 
-class ShopInfoPage extends StatelessWidget {
+class UrlLauncher {
+  Future makePhoneCall(String phoneNumber) async {
+    final Uri getPhoneNumber = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(getPhoneNumber);
+  }
+}
+
+class ShopInfoPage extends StatefulWidget {
+  @override
+  State<ShopInfoPage> createState() => _ShopInfoPageState();
+}
+
+class _ShopInfoPageState extends State<ShopInfoPage> with TickerProviderStateMixin  {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ShopInfo'),
+        title: Text('JAVANICA latin coffee'),
       ),
       body: Container(
-        padding: EdgeInsets.all(32.0),
+        // padding: EdgeInsets.all(32.0),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: ListView(
             children: <Widget>[
-              Text('To be continued...'),
+              Container(
+                  child: Text(
+                      'JAVANICA latin coffee',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 30,
+                          color: Colors.black
+                      )
+                  ),
+                  alignment: Alignment.center
+              ),
+              Container(
+                  child: Text(
+                          '〒781-5101\n 高知県高知市布師田3061\n',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.black
+                      )
+                  ),
+                  alignment: Alignment.center
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final urlLauncher = UrlLauncher();
+                  urlLauncher.makePhoneCall(dotenv.get('PHONE_NUMBER'));
+                  },
+                child: Text('電話番号：${dotenv.get('PHONE_NUMBER')}'),
+              ),
+              Container(
+                  margin: EdgeInsets.all(10), width: 350, height:200 ,
+                  decoration: BoxDecoration(
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/IMG_8834.jpg'),
+                        fit: BoxFit.cover,
+                      )
+                  ),
+                  alignment: Alignment.center
+              ),
+              Container(
+                  margin: EdgeInsets.all(10), width: 350, height:200 ,
+                  decoration: BoxDecoration(
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/IMG_8835.jpg'),
+                        fit: BoxFit.cover,
+                      )
+                  ),
+                  alignment: Alignment.center
+              ),
+              Container(
+                  margin: EdgeInsets.all(10), width: 350, height:200 ,
+                  decoration: BoxDecoration(
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/IMG_8836.jpg'),
+                        fit: BoxFit.cover,
+                      )
+                  ),
+                  alignment: Alignment.center
+              ),
             ],
           ),
         ),
