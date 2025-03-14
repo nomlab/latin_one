@@ -5,4 +5,3 @@
  2. https://github.com/KentaYoshioka/latin_one
  3. https://github.com/miyake13000/latin_one
  4. https://github.com/hosokawa-kenshin/latin_one
- 5. https://github.com/yoshinari-nomura/latin_one
